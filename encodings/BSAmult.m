@@ -3,7 +3,6 @@ function out = BSAmult(signal,fir,threshold)
 L = length(signal);
 F = length(fir);
 out = zeros(L,1);
-
 input = signal-min(signal); %zero min shift
 for t = 1 : (L-F)
    err1=0;

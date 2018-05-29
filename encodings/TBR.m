@@ -1,7 +1,7 @@
-function [out, thr, stpoint] = TBR(signal, factor)
+function [out, thr, start] = TBR(signal, factor)
 L=length(signal);
 diff=zeros(L,1);
-stpoint=signal(1);
+start=signal(1);
 for t = 1:(L-1)
    diff(t) = signal(t+1)-signal(t);
 end
