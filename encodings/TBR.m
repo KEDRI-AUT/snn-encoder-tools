@@ -1,4 +1,7 @@
 function [out, thr, start] = TBR(signal, factor)
+%TBR Threshold-based representation encoding algorithm.
+% Requires input signal and a factor that is independent of signal
+% amplitude (should be between 0-3 in general).
 L=length(signal);
 diff=zeros(L,1);
 start=signal(1);

@@ -1,4 +1,7 @@
 function [out,start] = MW(signal, threshold, window)
+%MW Moving Window encoding
+% requires input signal, threshold and window size. Threshold is additive,
+% depends on signal amplitude.
 L=length(signal);
 start=signal(1);
 out=zeros(L,1);

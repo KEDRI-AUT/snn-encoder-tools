@@ -1,4 +1,7 @@
 function gridSearchMW(signal)
+%gridSearhMW Performs grid search for MW encoding parameters
+% Brute-force grid search to find optimal window size (and threshold)
+% parameter of MW encoding. Indicates progress in console by counting.
 k=1; %index for window size
     clear signalnoiseratio search_snr search_rmse search_r2
     for wsize=2:2:30
@@ -14,7 +17,6 @@ k=1; %index for window size
 %             search_r2(k,i)=rsquared(signal,recon);
             i=i+1;
         end
-
         k=k+1
     end
     figure()
@@ -25,5 +27,4 @@ k=1; %index for window size
     % zlim([-10 5])
     title('Optimization of Moving Window encoding')
     % zlim([-0.3 -0.15])
-
 end

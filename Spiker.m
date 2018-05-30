@@ -22,7 +22,7 @@ function varargout = Spiker(varargin)
 
 % Edit the above text to modify the response to help Spiker
 
-% Last Modified by GUIDE v2.5 16-May-2018 17:26:04
+% Last Modified by GUIDE v2.5 30-May-2018 14:46:52
 
 % Begin initialization code - DO NOT EDIT
 gui_Singleton = 1;
@@ -75,12 +75,6 @@ varargout{1} = handles.output;
 
 % --- Executes on selection change in testSignalSelect.
 function testSignalSelect_Callback(hObject, eventdata, handles)
-% hObject    handle to testSignalSelect (see GCBO)
-% eventdata  reserved - to be defined in a future version of MATLAB
-% handles    structure with handles and user data (see GUIDATA)
-
-% Hints: contents = cellstr(get(hObject,'String')) returns testSignalSelect contents as cell array
-%        contents{get(hObject,'Value')} returns selected item from testSignalSelect
 str = get(hObject,'string');
 val = get(hObject,'value');
 handles.testsignaltype=str{val};
@@ -91,154 +85,25 @@ guidata(hObject, handles);
 
 % --- Executes during object creation, after setting all properties.
 function testSignalSelect_CreateFcn(hObject, eventdata, handles)
-% hObject    handle to testSignalSelect (see GCBO)
-% eventdata  reserved - to be defined in a future version of MATLAB
-% handles    empty - handles not created until after all CreateFcns called
-
-% Hint: popupmenu controls usually have a white background on Windows.
-%       See ISPC and COMPUTER.
 if ispc && isequal(get(hObject,'BackgroundColor'), get(0,'defaultUicontrolBackgroundColor'))
     set(hObject,'BackgroundColor','white');
 end
 
-
-% --- Executes on button press in loadOriginalButton.
-function loadOriginalButton_Callback(hObject, eventdata, handles)
-% hObject    handle to loadOriginalButton (see GCBO)
-% eventdata  reserved - to be defined in a future version of MATLAB
-% handles    structure with handles and user data (see GUIDATA)
-[FileName,PathName] = uigetfile('*.csv;*.xls;*.xlsx;*.txt');
-if isequal(FileName,0) || isequal(PathName,0)
-   return
-else
-    handles.signal=xlsread(strcat(PathName,FileName));
-    answer=inputdlg('Sampling frequency (Hz)');
-    handles.Fsample=str2num(answer{1});
-    %handles.signal=uiimport(strcat(PathName,FileName));
-    set(handles.thresholdSlider,'Max',0.3*range(handles.signal));
-    set(handles.searchButton,'visible','on');
-% Update handles structure
-guidata(hObject, handles);
-    plot(handles.signalPlot,handles.signal)
-end
-
-
-
-
-% --- Executes on button press in plotOriginalButton.
-function plotOriginalButton_Callback(hObject, eventdata, handles)
-% hObject    handle to plotOriginalButton (see GCBO)
-% eventdata  reserved - to be defined in a future version of MATLAB
-% handles    structure with handles and user data (see GUIDATA)
-% axes(handles.signalPlot)
-plot(handles.signalPlot,handles.signal)
-ylabel(handles.signalPlot,'signal')
-
-
-
 % --- Executes on button press in generateTestSignalButton.
 function generateTestSignalButton_Callback(hObject, eventdata, handles)
-% hObject    handle to generateTestSignalButton (see GCBO)
-% eventdata  reserved - to be defined in a future version of MATLAB
-% handles    structure with handles and user data (see GUIDATA)
 handles.Fsample=1000;
-    switch handles.testsignaltype
-        case 'Step-wise'
-            handles.signal=stepwise();
-        case 'Sinusoid'
-            handles.signal=sinusoid();
-        case 'Trended'
-            handles.signal=trended();
-        case 'Event-like'
-            handles.signal=eventlike();
-        case 'Select type'
-        case 'Custom sinusoid'
-            prompt = {'Sampling frequency (Hz):','Signal length (s):','Frequency band (Hz):','White noise strength:'};
-            title = 'Generate custom sinusoid signal';
-            dims = [1 50];
-            definput = {'1000','1','2:0.1:30','3'};
-            answer = inputdlg(prompt,title,dims,definput);
-            handles.signal=sinsig(answer);
-            handles.Fsample=str2num(answer{1});
-   end
+handles.signal=testSignal(handles.testsignaltype, hObject, handles);
 guidata(hObject, handles);
 set(handles.thresholdSlider,'Max',0.3*range(handles.signal));
-set(handles.searchButton,'visible','on');
+set(handles.thresholdSearchButton,'visible','on');
 plot(handles.signalPlot,handles.signal);
 size(handles.signal)
 
-
-
-
-
-% ----------- Test signal generating functions, to be boxed later -----------
-function  signal=stepwise()
-base=[0 1.15 3.5 6.85 12.35 12.35 6.85 3.5 1.15 0];
-signal=0;
-i=1;
-while i<length(base)+1
-   signal=vertcat(signal,base(i)*ones(100,1));  
-   i=i+1;
-end
-
-function signal=sinusoid()
-    Fs=1000; %Hz
-    time=0:1/Fs:1;
-    f_sin=2:0.1:30;
-    pwr_sin=rand(size(f_sin));
-    pwr_sin=pwr_sin*10;
-    clean=zeros(length(time),1);
-    for i = 1:length(f_sin)
-        clean=clean+pwr_sin(i)*sin(2*pi*f_sin(i)*time+1*rand*2*pi)';
-        signal=clean;
-    end
-    white = wgn(length(time),1,0);
-    signal=signal+mean(pwr_sin)*white;
-
-function signal=trended()
-    Fs=1000; %Hz
-    time=0:1/Fs:1;
-    f_sin=2:0.1:30;
-    pwr_sin=rand(size(f_sin));
-    pwr_sin=pwr_sin*10;
-    clean=zeros(length(time),1);
-    for i = 1:length(f_sin)
-        clean=clean+pwr_sin(i)*sin(2*pi*f_sin(i)*time+1*rand*2*pi)';
-        signal=clean;
-    end
-    white = wgn(length(time),1,0);
-    signal=signal+mean(pwr_sin)*white;
-    trend=range(signal)*4*(1-exp(-time/1*4))';
-    signal=signal+trend;
-    signal=signal-min(signal);
-
-function signal=eventlike()
-    f_sin=2:0.1:30;
-    pwr_sin=rand(size(f_sin));
-    pwr_sin=pwr_sin/sum(pwr_sin);
-    clean=zeros(1000,1);
-    for i = 1:length(f_sin)
-        clean=clean+pwr_sin(i)*sin(2*pi*f_sin(i)*(1:1000)/1000+rand*2*pi)';
-    end
-    clean=clean-mean(clean);
-    clean=clean/max(clean)*5;
-    % ERP addition
-    xt=[-250 0 50 120 200 220 240 340 400 480 499 750]+250;
-    yt=[   0 0  5 -55  26  29  24  22 -27   0   0   0];
-    signal=pchip(xt,yt,1:1000)';
-    signal=signal+clean;
-       
-
-
-% --- Executes on button press in searchButton.
-function searchButton_Callback(hObject, eventdata, handles)
-% hObject    handle to searchButton (see GCBO)
-% eventdata  reserved - to be defined in a future version of MATLAB
-% handles    structure with handles and user data (see GUIDATA)
-
+% --- Executes on button press in thresholdSearchButton.
+function thresholdSearchButton_Callback(hObject, eventdata, handles)
 signal=handles.signal;
 switch handles.selectedAlgorithm
-    case {'sfButton','SF'}
+    case 'sfButton'
         i=1;
         clear search_snr search_rate search_t search_rmse search_r2
         for threshold = (0.001:0.001:0.8)*range(signal)
@@ -318,9 +183,15 @@ handles.search_snr=search_snr;
 handles.search_t=search_t;
 set(handles.optimThresholdButton,'visible','on');
 guidata(hObject,handles);
+[m, i]=max(handles.search_snr);
+optimthreshold=handles.search_t(i);
+msgformat='Optimum @ threshold=%.4g with SNR=%.4g dB';
+message=sprintf(msgformat,optimthreshold,m);
+
 % axes(handles.optimizationPlot)
 subplot(2,1,1,handles.optimizationPlot)
 plot(search_t,search_snr)
+title(handles.optimizationPlot,message)
 xlim([min(search_t) max(search_t)])
 ylabel('SNR')
 % subplot(4,1,2)
@@ -358,6 +229,11 @@ function algorithmSelectionBG_SelectionChangedFcn(hObject, eventdata, handles)
 handles.selectedAlgorithm=get(get(handles.algorithmSelectionBG,'SelectedObject'),'Tag');
 set(handles.thresholdSlider,'Min',0);
 set(handles.thresholdSlider,'Value',0);
+set(handles.gridSearchButton,'visible','off');
+if ~isfield(handles,'signal')
+    errordlg('No signal loaded!')
+    return
+end
 set(handles.encodeButton,'visible','on');
 switch handles.selectedAlgorithm
     case 'tbrButton'
@@ -373,6 +249,7 @@ switch handles.selectedAlgorithm
         set(handles.checkFilterButton,'visible','on');
         handles.threshold = 0.95;  % default threshold value
         handles.windowsize = 24; % default windowsize value
+        set(handles.gridSearchButton,'visible','on');
     case 'sfButton'
         set(handles.thresholdSlider,'Max',0.3*range(handles.signal));
         set(handles.windowsizeEdit,'visible','off');
@@ -384,15 +261,16 @@ switch handles.selectedAlgorithm
         set(handles.cutoffEdit,'visible','off');
         set(handles.checkFilterButton,'visible','on');
         handles.windowsize = 8; % default windowsize value
+        set(handles.gridSearchButton,'visible','on');
 end
 guidata(hObject, handles);
 set(handles.thresholdEdit,'String',num2str(handles.threshold));
 set(handles.windowsizeEdit,'String',num2str(handles.windowsize));
 set(handles.thresholdSlider,'Value',handles.threshold);
 
-% --- Executes on button press in searchButton.
+% --- Executes on button press in thresholdSearchButton.
 function thresholdEdit_Callback(hObject, eventdata, handles)
-% hObject    handle to searchButton (see GCBO)
+% hObject    handle to thresholdSearchButton (see GCBO)
 % eventdata  reserved - to be defined in a future version of MATLAB
 % handles    structure with handles and user data (see GUIDATA)
 handles.threshold=str2num(get(hObject,'String'));
@@ -423,6 +301,10 @@ function encodeButton_Callback(hObject, eventdata, handles)
 % hObject    handle to encodeButton (see GCBO)
 % eventdata  reserved - to be defined in a future version of MATLAB
 % handles    structure with handles and user data (see GUIDATA)
+if ~isfield(handles,'signal')
+    errordlg('No signal loaded!')
+    return
+end
 handles.threshold=str2double(get(handles.thresholdEdit,'string'));
 handles.windowsize=str2double(get(handles.windowsizeEdit,'string'));
 handles.cutoff=str2double(get(handles.cutoffEdit,'string'));
@@ -431,6 +313,7 @@ switch handles.selectedAlgorithm
         [spikes, start]=SF(handles.signal,handles.threshold);
         recon = SF_de(spikes,handles.threshold,start);
         rmse = sqrt(sum((handles.signal-recon).^2)/length(handles.signal));
+        currentSNR = snr(handles.signal(1:length(recon)),recon-handles.signal(1:length(recon)));
         msgformat='Results: encoded with %s \n threshold=%.4g \n RMSE=%.4g';
         message=sprintf(msgformat,'SF',handles.threshold,rmse);
                        
@@ -438,12 +321,14 @@ switch handles.selectedAlgorithm
         [spikes, thr,start]=TBR(handles.signal,handles.threshold);
         recon = TBR_de(spikes,thr,start);
         rmse = sqrt(sum((handles.signal-recon).^2)/length(handles.signal));
+        currentSNR = snr(handles.signal(1:length(recon)),recon-handles.signal(1:length(recon)));
         msgformat='Results: encoded with %s \n threshold=%.4g \n RMSE=%.4g';
         message=sprintf(msgformat,'TBR',handles.threshold,rmse);
     case 'mwButton'
         [spikes,start]=MW(handles.signal,handles.threshold,handles.windowsize);
         recon = MW_de(spikes,handles.threshold,handles.windowsize,start); % no scaling here!
         rmse = sqrt(sum((handles.signal-recon).^2)/length(handles.signal));
+        currentSNR = snr(handles.signal(1:length(recon)),recon-handles.signal(1:length(recon)));
         msgformat='Results: encoded with %s \n threshold=%.4g; window size=%d \n RMSE=%.4g';
         message=sprintf(msgformat,'MW',handles.threshold,handles.windowsize,rmse);
     case 'bsaButton'
@@ -452,7 +337,6 @@ switch handles.selectedAlgorithm
         signal=signal - min(signal);
             Fs=handles.Fsample;
         cutoffN = handles.cutoff/(Fs/2); %normalizing cutoff
-        
         fir=fir1(handles.windowsize,cutoffN);
         fir=fir*abs(max(signal)-0)*2; 
         spikes=BSAmult(handles.signal,fir,handles.threshold); % mult!!
@@ -460,6 +344,7 @@ switch handles.selectedAlgorithm
         recon=recon+shift;
         recon=recon(1:(min(length(recon),length(signal))));
         rmse = sqrt(sum((handles.signal-recon).^2)/length(handles.signal));
+        currentSNR = snr(signal(1:length(recon)),recon-signal(1:length(recon)));
         msgformat='Results: encoded with %s \n threshold=%.4g; window size=%d; \n cutoff=%.4g; Fsample=%.4g \n RMSE=%.4g';
         message=sprintf(msgformat,'BSA',handles.threshold,handles.windowsize,handles.cutoff,Fs,rmse);
 end
@@ -467,7 +352,7 @@ handles.spikes=spikes;
 handles.recon=recon;
 set(handles.encodeDisplayText,'string',message);
 guidata(hObject,handles);
-
+%plot encoded signals
 subplot(2,1,1,handles.signalPlot)
 plot(handles.signal)
 ylabel('signals')
@@ -478,6 +363,10 @@ legend('original','decoded')
 subplot(2,1,2)
 stem(handles.spikes)
 ylabel('spikes')
+%update title on optimizationPlot
+msgformat='Encoded @ threshold=%.4g with SNR=%.4g dB';
+message=sprintf(msgformat,handles.threshold,currentSNR);
+title(handles.optimizationPlot,message);
 
 
 % --- Executes on slider movement.
@@ -505,20 +394,8 @@ if isequal(get(hObject,'BackgroundColor'), get(0,'defaultUicontrolBackgroundColo
 end
 
 
-% --- If Enable == 'on', executes on mouse press in 5 pixel border.
-% --- Otherwise, executes on mouse press in 5 pixel border or over thresholdSlider.
-function thresholdSlider_ButtonDownFcn(hObject, eventdata, handles)
-% hObject    handle to thresholdSlider (see GCBO)
-% eventdata  reserved - to be defined in a future version of MATLAB
-% handles    structure with handles and user data (see GUIDATA)
-
-
 % --- Executes on button press in optimThresholdButton.
 function optimThresholdButton_Callback(hObject, eventdata, handles)
-% hObject    handle to optimThresholdButton (see GCBO)
-% eventdata  reserved - to be defined in a future version of MATLAB
-% handles    structure with handles and user data (see GUIDATA)
-
 [m, i]=max(handles.search_snr);
 handles.threshold=handles.search_t(i);
 guidata(hObject,handles);
@@ -597,16 +474,6 @@ elseif strcmp(handles.selectedAlgorithm,'bsaButton')
 end
 guidata(hObject,handles);
 
-
-% --- Executes on button press in reset.
-function reset_Callback(hObject, eventdata, handles)
-% hObject    handle to reset (see GCBO)
-% eventdata  reserved - to be defined in a future version of MATLAB
-% handles    structure with handles and user data (see GUIDATA)
-close(gcbf)
-Spiker
-
-
 % --- Executes on button press in fftButton.
 function fftButton_Callback(hObject, eventdata, handles)
 % hObject    handle to fftButton (see GCBO)
@@ -625,17 +492,6 @@ subplot(3,1,3)
 if isfield(handles,'spikes')
     myfft(handles.spikes,'spikes');
 end
-
-
-% --- Executes on button press in workspaceButton.
-function workspaceButton_Callback(hObject, eventdata, handles)
-% hObject    handle to workspaceButton (see GCBO)
-% eventdata  reserved - to be defined in a future version of MATLAB
-% handles    structure with handles and user data (see GUIDATA)
-assignin('base','signal',handles.signal)
-assignin('base','spikes',handles.spikes)
-assignin('base','recon',handles.recon)
-
 
 % --- Executes on button press in checkFilterButton.
 function checkFilterButton_Callback(hObject, eventdata, handles)
@@ -661,3 +517,58 @@ switch handles.selectedAlgorithm
         title(sprintf('Set cutoff frequency = %dHz; Window size = %d',handles.cutoff,handles.windowsize));
 end
         
+
+
+% --------------------------------------------------------------------
+function dataMenu_Callback(hObject, eventdata, handles)
+% hObject    handle to dataMenu (see GCBO)
+% eventdata  reserved - to be defined in a future version of MATLAB
+% handles    structure with handles and user data (see GUIDATA)
+
+
+% --------------------------------------------------------------------
+function loadDataMenu_Callback(hObject, eventdata, handles)
+[FileName,PathName] = uigetfile('*.csv;*.xls;*.xlsx;*.txt');
+if isequal(FileName,0) || isequal(PathName,0)
+   return
+else
+    answer=inputdlg({'Sampling frequency (Hz)','Data column'},'',1,{'1000','1'});
+    tmp=xlsread(strcat(PathName,FileName));
+    if str2num(answer{2})>size(tmp,2)
+        errordlg('Non-existing column in file')
+        return
+    end
+    handles.signal=tmp(:,str2num(answer{2}));
+    handles.Fsample=str2num(answer{1});
+    %handles.signal=uiimport(strcat(PathName,FileName));
+    set(handles.thresholdSlider,'Max',0.3*range(handles.signal));
+    set(handles.thresholdSearchButton,'visible','on');
+% Update handles structure
+guidata(hObject, handles);
+    plot(handles.signalPlot,handles.signal)
+end
+
+
+% --------------------------------------------------------------------
+function workspaceMenu_Callback(hObject, eventdata, handles)
+assignin('base','signal',handles.signal)
+assignin('base','spikes',handles.spikes)
+assignin('base','recon',handles.recon)
+
+
+% --------------------------------------------------------------------
+function Untitled_7_Callback(hObject, eventdata, handles)
+% hObject    handle to Untitled_7 (see GCBO)
+% eventdata  reserved - to be defined in a future version of MATLAB
+% handles    structure with handles and user data (see GUIDATA)
+
+
+% --------------------------------------------------------------------
+function restartMenu_Callback(hObject, eventdata, handles)
+close(gcbf)
+Spiker
+
+% --------------------------------------------------------------------
+function plotOriginalMenu_Callback(hObject, eventdata, handles)
+plot(handles.signalPlot,handles.signal)
+ylabel(handles.signalPlot,'signal')

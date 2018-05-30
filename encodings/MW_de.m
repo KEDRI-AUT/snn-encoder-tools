@@ -1,4 +1,6 @@
 function [recon, base] = MW_de(spikes, thr, window, start)
+%MW_de Moving Window decoding algorithm.
+% This algorithm is the same as that of TBR and SF.
 L=length(spikes);
 recon = zeros(L,1);
 recon(1)=start;

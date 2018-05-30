@@ -1,4 +1,9 @@
 function gridSearchBSA(signal,Fs)
+%gridSearhMW Performs grid search for MW encoding parameters
+% Brute-force grid search to find optimal filter size and cutoff frequency
+% parameters of BSA encoding. For each cutoff-size pair, 
+% the threshold is optimized and the final result is plotted as mesh.
+% Indicates progress in console by counting.
 k=1; %index for numtaps
 clear snrat rsquare
 snrat=zeros(length(16:4:80),length(20:2:80));

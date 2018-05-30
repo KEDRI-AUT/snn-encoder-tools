@@ -1,4 +1,6 @@
 function [out, start] = SF(signal, thr)
+%SF Step-Forward encoding algoritm.
+% Requires input signal and additive threshold (depends on signal scale).
 L=length(signal);
 start=signal(1);
 out=zeros(L,1);

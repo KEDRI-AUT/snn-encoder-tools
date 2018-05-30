@@ -1,4 +1,6 @@
 function recon = SF_de(spikes, thr, start)
+%SF_de Step Forward decoding algorithm.
+% This algorithm is the same as that of TBR and MW.
 L=length(spikes);
 recon = zeros(L,1);
 recon(1)=start;

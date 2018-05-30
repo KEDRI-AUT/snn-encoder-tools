@@ -1,4 +1,7 @@
 function recon = TBR_de_sc(spikes, thr, bounds, stpt)
+%TBR_de_sc Threshold-based representation decoding algorithm with bounded reconstructed signal.
+% The signal being reconstructed will exceed the upper/lower bounds of the
+% original signal (passed as input here).
 L=length(spikes);
 recon = zeros(L,1);
 recon(1)=stpt;

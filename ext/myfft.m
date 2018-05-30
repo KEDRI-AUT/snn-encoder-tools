@@ -1,6 +1,6 @@
 function [  ] = myfft( signal,name )
-%MYFFT Summary of this function goes here
-%   Detailed explanation goes here
+%MYFFT Plot results of an FFT
+%   Performs FFT and plots results on new figure.
     fftlen=length(signal);
     Fs=1000;
 Y = fft(signal);

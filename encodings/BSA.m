@@ -1,4 +1,8 @@
 function out = BSA(signal,fir,threshold)
+%BSA - BSA algorithm with additive threshold
+% requires input signal to be encoded, FIR filter coefficients in array, a
+% threshold. Threshold could be anything, depending on signal
+% amplitude.
 L = length(signal);
 F = length(fir);
 out = zeros(L,1);

@@ -1,4 +1,6 @@
 function recon = TBR_de(spikes, thr,start)
+%TBR_de Threshold-based representation decoding algorithm.
+% This algorithm is the same as that of MW and SF.
 L=length(spikes);
 recon = zeros(L,1);
 recon(1)=start;

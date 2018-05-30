@@ -1,5 +1,8 @@
 function out = BSAmult(signal,fir,threshold)
-% multiplicative threshold
+%BSAmult - BSA algorithm with multiplicative threshold
+% requires input signal to be encoded, FIR filter coefficients in array, a
+% threshold. Threshold should be around 0.95, independent of signal
+% amplitude.
 L = length(signal);
 F = length(fir);
 out = zeros(L,1);
