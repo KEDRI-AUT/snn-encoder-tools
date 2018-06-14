@@ -1,15 +1,20 @@
 <deployment-project plugin="plugin.ezdeploy" plugin-version="1.0">
   <configuration build-checksum="2198410424" file="C:\Users\aksha\Documents\GitHub\snn-encoder-tools\Spiker.prj" location="C:\Users\aksha\Documents\GitHub\snn-encoder-tools" name="Spiker" preferred-package-location="C:\Users\aksha\Documents\GitHub\snn-encoder-tools\Spiker\for_redistribution" preferred-package-type="package.type.exe" target="target.ezdeploy.standalone" target-name="Application Compiler">
     <param.appname>Spiker</param.appname>
-    <param.icon />
-    <param.icons />
+    <param.icon>${PROJECT_ROOT}\Spiker_resources\icon.ico</param.icon>
+    <param.icons>
+      <file>${PROJECT_ROOT}\Spiker_resources\icon_48.png</file>
+      <file>${PROJECT_ROOT}\Spiker_resources\icon_32.png</file>
+      <file>${PROJECT_ROOT}\Spiker_resources\icon_24.png</file>
+      <file>${PROJECT_ROOT}\Spiker_resources\icon_16.png</file>
+    </param.icons>
     <param.version>1.0</param.version>
     <param.authnamewatermark>Balint Petro</param.authnamewatermark>
     <param.email>petro@mogi.bme.hu</param.email>
     <param.company>KEDRI</param.company>
-    <param.summary />
+    <param.summary>A spike encoding tools for termporal data input to spiking neural network.</param.summary>
     <param.description />
-    <param.screenshot />
+    <param.screenshot>${PROJECT_ROOT}\assets\splash.jpg</param.screenshot>
     <param.guid />
     <param.installpath.string>\KEDRI\Spiker\</param.installpath.string>
     <param.installpath.combo>option.installpath.programfiles</param.installpath.combo>
@@ -38,12 +43,8 @@
     <param.example />
     <param.help.text />
     <unset>
-      <param.icon />
-      <param.icons />
       <param.version />
-      <param.summary />
       <param.description />
-      <param.screenshot />
       <param.guid />
       <param.installpath.string />
       <param.installpath.combo />
