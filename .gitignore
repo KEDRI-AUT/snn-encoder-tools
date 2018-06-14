@@ -23,3 +23,8 @@ sccprj/
 
 # Octave session info
 octave-workspace
+
+# Custom ignores
+
+Spiker/*
+Spiker_resources/*
