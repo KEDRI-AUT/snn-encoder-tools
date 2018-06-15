@@ -22,7 +22,7 @@ function varargout = Spiker(varargin)
 
 % Edit the above text to modify the response to help Spiker
 
-% Last Modified by GUIDE v2.5 14-Jun-2018 16:47:19
+% Last Modified by GUIDE v2.5 15-Jun-2018 19:29:47
 
 % Begin initialization code - DO NOT EDIT
 gui_Singleton = 1;
