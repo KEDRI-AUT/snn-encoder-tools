@@ -1,5 +1,5 @@
 <deployment-project plugin="plugin.ezdeploy" plugin-version="1.0">
-  <configuration build-checksum="2198410424" file="C:\Users\aksha\Documents\GitHub\snn-encoder-tools\Spiker.prj" location="C:\Users\aksha\Documents\GitHub\snn-encoder-tools" name="Spiker" preferred-package-location="C:\Users\aksha\Documents\GitHub\snn-encoder-tools\Spiker\for_redistribution" preferred-package-type="package.type.exe" target="target.ezdeploy.standalone" target-name="Application Compiler">
+  <configuration build-checksum="1084091070" file="C:\Users\aksha\Documents\GitHub\snn-encoder-tools\Spiker.prj" location="C:\Users\aksha\Documents\GitHub\snn-encoder-tools" name="Spiker" preferred-package-location="C:\Users\aksha\Documents\GitHub\snn-encoder-tools\Spiker\for_redistribution" preferred-package-type="package.type.exe" target="target.ezdeploy.standalone" target-name="Application Compiler">
     <param.appname>Spiker</param.appname>
     <param.icon>${PROJECT_ROOT}\Spiker_resources\icon.ico</param.icon>
     <param.icons>
@@ -87,6 +87,8 @@
       <file>${PROJECT_ROOT}\ext\gridSearchMW.m</file>
       <file>${PROJECT_ROOT}\ext\myfft.m</file>
       <file>${PROJECT_ROOT}\ext\rsquared.m</file>
+      <file>${PROJECT_ROOT}\ext\sinsig.m</file>
+      <file>${PROJECT_ROOT}\ext\testSignal.m</file>
     </fileset.depfun>
     <build-deliverables>
       <file location="${PROJECT_ROOT}\Spiker\for_testing" name="Spiker.exe" optional="false">C:\Users\aksha\Documents\GitHub\snn-encoder-tools\Spiker\for_testing\Spiker.exe</file>
