@@ -14,5 +14,7 @@ Spiking Neural Networks - Encoding Optimization Tools
 7. Observe Fast Fourier Transformation results for original, reconstructed and spike signals by clicking 'FFT' button.
 8. In the 'Utilities' menu, select 'Save to workspace' (or Ctrl+S) to save original, reconstructed and spike signals (if these exist) to the workspace as variables.
 
+# About formatting your own data to be loaded:
+Currently, only a single data sample can be loaded into the Spiker tool. The data should be stored as an '.xls', '.xlsx'., or '.csv' or similar file and it should have a layout such that the consecutive rows represent the consecutive time points. It is okay to have multiple columns (e.g. for multiple features); during the loading process, a dialog box appears to select the column that you wish to work with.
 -----
 Future collaborations regarding this work are welcome!
