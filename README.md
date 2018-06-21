@@ -18,3 +18,6 @@ Spiking Neural Networks - Encoding Optimization Tools
 Currently, only a single data sample can be loaded into the Spiker tool. The data should be stored as an '.xls', '.xlsx'., or '.csv' or similar file and it should have a layout such that the consecutive rows represent the consecutive time points. It is okay to have multiple columns (e.g. for multiple features); during the loading process, a dialog box appears to select the column that you wish to work with.
 -----
 Future collaborations regarding this work are welcome!
+-----
+# Compatibility:
+The main built-in function used in the current version is 'snr' which was introduced in Matlab version R2013b. This and more recent versions should be compatible with this code.
