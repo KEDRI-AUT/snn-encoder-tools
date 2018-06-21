@@ -91,11 +91,11 @@ end
 
 % --- Executes on button press in generateTestSignalButton.
 function generateTestSignalButton_Callback(hObject, eventdata, handles)
-handles.Fsample=1000;
-signal=testSignal(handles.testsignaltype, hObject, handles);
-if isempty(signal)
+try [signal,handles.Fsample] = testSignal(handles.testsignaltype);
+catch
     return
 end
+
 if ~isempty(get(handles.algorithmSelectionBG,'selectedobject'))
     set(handles.encodeButton,'visible','on')
 end
@@ -104,8 +104,8 @@ guidata(hObject, handles);
 set(handles.thresholdSlider,'Max',0.3*range(handles.signal));
 set(handles.thresholdSearchButton,'visible','on');
 plot(handles.signalPlot,handles.signal);
+'Signal size'
 size(handles.signal)
-
 % --- Executes on button press in thresholdSearchButton.
 function thresholdSearchButton_Callback(hObject, eventdata, handles)
 signal=handles.signal;
@@ -304,21 +304,27 @@ switch handles.selectedAlgorithm
         [spikes, start]=SF(handles.signal,handles.threshold);
         recon = SF_de(spikes,handles.threshold,start);
         rmse = sqrt(sum((handles.signal-recon).^2)/length(handles.signal));
-        currentSNR = snr(handles.signal(1:length(recon)),recon-handles.signal(1:length(recon)));
+        try currentSNR = snr(handles.signal(1:length(recon)),recon-handles.signal(1:length(recon)));
+        catch %this is added for older matlab version compatibility (no snr)
+        end
         msgformat='Results: encoded with %s \n threshold=%.4g \n RMSE=%.4g';
         message=sprintf(msgformat,'SF',handles.threshold,rmse);             
     case 'tbrButton'
         [spikes, thr,start]=TBR(handles.signal,handles.threshold);
         recon = TBR_de(spikes,thr,start);
         rmse = sqrt(sum((handles.signal-recon).^2)/length(handles.signal));
-        currentSNR = snr(handles.signal(1:length(recon)),recon-handles.signal(1:length(recon)));
+        try currentSNR = snr(handles.signal(1:length(recon)),recon-handles.signal(1:length(recon)));
+        catch
+        end
         msgformat='Results: encoded with %s \n threshold=%.4g \n RMSE=%.4g';
         message=sprintf(msgformat,'TBR',handles.threshold,rmse);
     case 'mwButton'
         [spikes,start]=MW(handles.signal,handles.threshold,handles.windowsize);
         recon = MW_de(spikes,handles.threshold,handles.windowsize,start); % no scaling here!
         rmse = sqrt(sum((handles.signal-recon).^2)/length(handles.signal));
-        currentSNR = snr(handles.signal(1:length(recon)),recon-handles.signal(1:length(recon)));
+        try currentSNR = snr(handles.signal(1:length(recon)),recon-handles.signal(1:length(recon)));
+        catch
+        end
         msgformat='Results: encoded with %s \n threshold=%.4g; window size=%d \n RMSE=%.4g';
         message=sprintf(msgformat,'MW',handles.threshold,handles.windowsize,rmse);
     case 'bsaButton'
@@ -333,7 +339,9 @@ switch handles.selectedAlgorithm
         recon = conv(spikes,fir,'full');
         recon=recon(1:(min(length(recon),length(signal))));
         rmse = sqrt(sum((signal-recon).^2)/length(signal));
-        currentSNR = snr(signal(1:length(recon)),recon-signal(1:length(recon)));
+        try currentSNR = snr(signal(1:length(recon)),recon-signal(1:length(recon)));
+        catch
+        end
         msgformat='Results: encoded with %s \n threshold=%.4g; window size=%d; \n cutoff=%.4g; Fsample=%.4g \n RMSE=%.4g';
         message=sprintf(msgformat,'BSA',handles.threshold,handles.windowsize,handles.cutoff,Fs,rmse);
         recon=recon+shift;
@@ -355,7 +363,9 @@ stem(handles.spikes)
 ylabel('spikes')
 %update title on optimizationPlot
 msgformat='Encoded @ threshold=%.4g with SNR=%.4g dB';
-message=sprintf(msgformat,handles.threshold,currentSNR);
+try message=sprintf(msgformat,handles.threshold,currentSNR); %for old version compatibility without SNR function
+catch
+end
 title(handles.optimizationPlot,message);
 
 
@@ -442,15 +452,15 @@ function fftButton_Callback(hObject, eventdata, handles)
 figure
 subplot(3,1,1)
 if isfield(handles,'signal')
-    myfft(handles.signal,'input signal');
+    myfft(handles.signal,'input signal',handles.Fsample);
 end
 subplot(3,1,2)
 if isfield(handles,'recon')
-    myfft(handles.recon,'reconstructed signal');
+    myfft(handles.recon,'reconstructed signal',handles.Fsample);
 end
 subplot(3,1,3)
 if isfield(handles,'spikes')
-    myfft(handles.spikes,'spikes');
+    myfft(handles.spikes,'spikes',handles.Fsample);
 end
 
 % --- Executes on button press in checkFilterButton.
@@ -526,8 +536,12 @@ end
 
 % --------------------------------------------------------------------
 function plotOriginalMenu_Callback(hObject, eventdata, handles)
-plot(handles.signalPlot,handles.signal)
-ylabel(handles.signalPlot,'signal')
+try plot(handles.signalPlot,handles.signal)
+    ylabel(handles.signalPlot,'signal')
+catch
+    msgbox('No signal to plot');
+end
+
 
 
 % --------------------------------------------------------------------

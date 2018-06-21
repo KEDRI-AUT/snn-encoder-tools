@@ -1,4 +1,4 @@
-function signal = testSignal( testSignalType, hObject, handles )
+function [signal, Fs] = testSignal( testSignalType )
 %testsignal Test signal generator
 %   Stepwise, sinusoid, trended and event-like signals. As input, specify
 %   which type to be generated.
@@ -11,6 +11,7 @@ switch testSignalType
             signal=vertcat(signal,base(i)*ones(100,1));  
             i=i+1;
         end
+        Fs=1000;
     case 'Sinusoid'
         Fs=1000; %Hz
         time=0:1/Fs:1;
@@ -61,10 +62,10 @@ switch testSignalType
         dims = [1 50];
         definput = {'1000','1','2:0.1:30','3'};
         answer = inputdlg(prompt,title,dims,definput);
-        signal=sinsig(answer);
-        handles.Fsample=str2num(answer{1});
-        
+        try signal=sinsig(answer);
+            Fs=str2num(answer{1});
+        catch
+        end
 end
-guidata(handles.figure1, handles)
 end
 
