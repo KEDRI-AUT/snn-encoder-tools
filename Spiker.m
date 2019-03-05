@@ -93,6 +93,7 @@ end
 function generateTestSignalButton_Callback(hObject, eventdata, handles)
 try [signal,handles.Fsample] = testSignal(handles.testsignaltype);
 catch
+    disp('Error occurred. No signal generated')
     return
 end
 
@@ -104,8 +105,8 @@ guidata(hObject, handles);
 set(handles.thresholdSlider,'Max',0.3*range(handles.signal));
 set(handles.thresholdSearchButton,'visible','on');
 plot(handles.signalPlot,handles.signal);
-'Signal size'
-size(handles.signal)
+disp('Signal size')
+disp(size(handles.signal))
 % --- Executes on button press in thresholdSearchButton.
 function thresholdSearchButton_Callback(hObject, eventdata, handles)
 signal=handles.signal;
@@ -150,13 +151,13 @@ switch handles.selectedAlgorithm
         windowsize=handles.windowsize;
         clear search_snr search_rate search_t search_rmse search_r2
         for threshold = (0.002:0.001:0.8)*range(signal)
-            search_t(i)=threshold;
+            search_t(i)=threshold; %#ok<*AGROW>
             [spikes,stpt]=MW(signal,threshold,windowsize);
             recon = MW_de(spikes,threshold,windowsize,stpt); %scaling here!
         %     recon = MW_de_sc(spikes,threshold,windowsize,bounds,stpt); %scaling here!
             search_snr(i)=snr(signal,recon-signal);
             search_rate(i)=mean(abs(spikes));
-            search_rmse(i)=sqrt(sum((signal-recon).^2)/length(signal));
+            search_rmse(i)=sqrt(sum((signal-recon).^2)/length(signal)); %#ok<*NASGU>
             search_r2(i)=rsquared(signal,recon);
             if search_rate(i)<0.005
                 break
