@@ -15,7 +15,7 @@ for i = 1:length(f_sin)
     clean=clean+pwr_sin(i)*sin(2*pi*f_sin(i)*time+rand*2*pi)';
 end
 if white ~=0
-    white_noise = wgn(length(time),1,0);
+    white_noise = randn(length(time),1);
     signal = clean  + white*white_noise*(mean(pwr_sin));
 else
     signal=clean;
