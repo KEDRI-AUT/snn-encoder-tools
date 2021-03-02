@@ -23,7 +23,7 @@ switch testSignalType
             clean=clean+pwr_sin(i)*sin(2*pi*f_sin(i)*time+1*rand*2*pi)';
             signal=clean;
         end
-        white = wgn(length(time),1,0);
+        white = randn(length(time),1);
         signal=signal+mean(pwr_sin)*white;
     case 'Trended'
         Fs=1000; %Hz
@@ -36,7 +36,7 @@ switch testSignalType
             clean=clean+pwr_sin(i)*sin(2*pi*f_sin(i)*time+1*rand*2*pi)';
         end
         signal=clean;
-        white = wgn(length(time),1,0);
+        white = randn(length(time),1);
         signal=signal+mean(pwr_sin)*white;
         trend=range(signal)*4*(1-exp(-time/1*4))';
         signal=signal+trend;
